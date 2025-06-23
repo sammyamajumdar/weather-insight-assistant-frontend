@@ -69,7 +69,7 @@ const WeatherGraph = () => {
 
   const chartData = {
     labels: weatherData.map(item => 
-      new Date(item.time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+      new Date(item.time).toLocaleTimeString([], { year: 'numeric', month: '2-digit',day: '2-digit',hour: '2-digit', minute: '2-digit' })
     ),
     datasets: [
       {
