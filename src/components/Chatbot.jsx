@@ -1,5 +1,6 @@
 import React, { useState, useRef } from "react";
 import Connector from "./Connector";
+import { CHAT_ENDPOINT } from "../constants/constants";
 import {
   Box,
   Paper,
@@ -16,32 +17,50 @@ const Chatbot = () => {
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
   const messagesEndRef = useRef(null);
-const API_ENDPOINT = "http://nasstarproject.bbe4c8gqgufcagcb.uksouth.azurecontainer.io:8000/get_response"
 
-const handleSend = async () => {
+  const handleSend = async () => {
   if (!input.trim()) return;
   const userMessage = { sender: "user", text: input };
   setMessages((msgs) => [...msgs, userMessage]);
   setLoading(true);
 
   try {
-    const res = await fetch(API_ENDPOINT, {
+    const res = await fetch(CHAT_ENDPOINT, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ query: input }),
     });
 
     if (!res.ok) {
-      // Server returned an error status
       setMessages((msgs) => [
         ...msgs,
         { sender: "bot", text: "server error please try again later" },
       ]);
     } else {
       const data = await res.json();
+      let botText = "";
+
+  if (typeof data === "object" && data !== null) {
+    if (
+      "response" in data &&
+      typeof data.response === "object" &&
+      data.response !== null &&
+      "input" in data.response &&
+      "output" in data.response
+    ) {
+      botText = data.response.output || "No output.";
+    } else if ("response" in data && typeof data.response === "string") {
+      botText = data.response || "No response.";
+    } else {
+      throw new Error("Unexpected response format");
+    }
+  } else {
+    throw new Error("Invalid response from server");
+  }
+
       setMessages((msgs) => [
         ...msgs,
-        { sender: "bot", text: data.response?.output || "No response." },
+        { sender: "bot", text: botText },
       ]);
     }
   } catch (e) {
@@ -49,11 +68,12 @@ const handleSend = async () => {
       ...msgs,
       { sender: "bot", text: "server error please try again later" },
     ]);
+  } finally {
+    setLoading(false);
+    setInput("");
   }
-  setInput("");
-  setLoading(false);
-  setTimeout(() => messagesEndRef.current?.scrollIntoView({ behavior: "smooth" }), 100);
 };
+
 
   const handleClear = () => {
     setMessages([]);

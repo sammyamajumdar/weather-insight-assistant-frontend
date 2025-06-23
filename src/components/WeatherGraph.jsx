@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { GRAPH_ENDPOINT } from '../constants/constants';
 import { Line } from 'react-chartjs-2';
 import {
   Chart as ChartJS,
@@ -11,7 +12,7 @@ import {
   Legend,
 } from 'chart.js';
 
-// Register Chart.js components
+
 ChartJS.register(
   CategoryScale,
   LinearScale,
@@ -35,8 +36,8 @@ const WeatherGraph = () => {
         const startDate = "2020-01-01 00:00:00";
 
 
-        const API_ENDPOINT = "http://nasstarproject.bbe4c8gqgufcagcb.uksouth.azurecontainer.io:8000/weather_data"
-        const response = await fetch(API_ENDPOINT, {
+
+        const response = await fetch(GRAPH_ENDPOINT, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
@@ -117,8 +118,8 @@ const WeatherGraph = () => {
   };
 
   return (
-    <div className="h-full p-4">
-      <h2 className="text-xl font-semibold mb-4 text-gray-700 flex justify-center">Weather Trends</h2>
+    <div className="h-full p-4 bg-black">
+      <h2 className="text-xl font-semibold mb-4 text-blue-500 flex justify-center">Weather Trends</h2>
       
       {loading && (
         <div className="flex justify-center items-center h-full">
@@ -133,7 +134,7 @@ const WeatherGraph = () => {
       )}
       
       {!loading && !error && weatherData.length > 0 && (
-        <div style={{ width: '90%', height: '290px', maxWidth: '600px', margin: '0 auto' }}><Line data={chartData} options={options} /></div>
+        <div style={{ width: '90%', height: '290px', maxWidth: '600px', margin: '0 auto' }} ><Line data={chartData} options={options} /></div>
       )}
       
       {!loading && !error && weatherData.length === 0 && (
