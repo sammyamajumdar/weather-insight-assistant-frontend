@@ -52,7 +52,10 @@ const WeatherGraph = () => {
         }
 
         const data = await response.json();
-        setWeatherData(data.data);
+        const uniqueData = Array.from(
+  new Map(data.data.map(item => [item.time, item])).values()
+);
+        setWeatherData(uniqueData);
       } catch (err) {
         setError(err.message);
       } finally {
